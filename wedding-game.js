@@ -3,7 +3,6 @@ const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 document.body.appendChild(canvas);
 canvas.style.display = 'block';
-canvas.style.touchAction = 'none';
 document.body.style.margin = '0';
 let groundY;
 function resizeCanvas() {
@@ -23,13 +22,10 @@ let countdownTimer = null;
 
 const gravity = 0.5;
 
-
 const playerImg = new Image();
 playerImg.src = 'player.png';
-
 const brideImg = new Image();
 brideImg.src = 'bride.png';
-
 const enemyImages = [];
 const enemyCount = 7;
 for (let i = 1; i <= enemyCount; i++) {
@@ -37,7 +33,6 @@ for (let i = 1; i <= enemyCount; i++) {
   img.src = `enemy${i}.png`;
   enemyImages.push(img);
 }
-
 const bgImg = new Image();
 bgImg.src = 'background.png';
 
@@ -52,11 +47,10 @@ const player = {
   jumpPower: -10,
   grounded: true
 };
-
-const enemies = Array.from({ length: Math.floor(Math.random() * 4) + 10 }, (_, i) => {
+const enemies = Array.from({ length: Math.floor(Math.random() * 4) + 7 }, (_, i) => {
   const spacing = 200;
   const startX = 300 + spacing * i;
-  const enemyImgIndex = Math.floor(Math.random() * enemyImages.length);
+  const imgIndex = Math.floor(Math.random() * enemyImages.length);
   return {
     x: startX,
     y: groundY - 40,
@@ -64,10 +58,9 @@ const enemies = Array.from({ length: Math.floor(Math.random() * 4) + 10 }, (_, i
     height: 40,
     vx: Math.random() < 0.5 ? 1 : -1,
     alive: true,
-    img: enemyImages[enemyImgIndex]
+    img: enemyImages[imgIndex]
   };
 });
-
 const bride = {
   x: 3000,
   y: groundY - 48,
@@ -96,7 +89,6 @@ function update() {
     player.vy = player.jumpPower;
     player.grounded = false;
   }
-
   if (touchX !== null && player.grounded) {
     player.vy = player.jumpPower;
     player.grounded = false;
@@ -104,7 +96,6 @@ function update() {
 
   player.x += player.vx;
   player.y += player.vy;
-
   if (player.y + player.height >= groundY) {
     player.y = groundY - player.height;
     player.vy = 0;
@@ -113,16 +104,13 @@ function update() {
 
   enemies.forEach(enemy => {
     if (!enemy.alive) return;
-
     if (Math.random() < 0.01) {
       enemy.vx = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 2 + 0.5);
     }
-
     enemy.x += enemy.vx;
     if (enemy.x <= 200 || enemy.x + enemy.width >= 3000) {
       enemy.vx *= -1;
     }
-
     if (
       player.x < enemy.x + enemy.width &&
       player.x + player.width > enemy.x &&
@@ -137,7 +125,6 @@ function update() {
       }
     }
   });
-
   if (
     player.x < bride.x + bride.width &&
     player.x + player.width > bride.x &&
@@ -150,12 +137,10 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   const offset = cameraX % bgImg.width;
   for (let i = -1; i <= Math.ceil(canvas.width / bgImg.width); i++) {
-    ctx.drawImage(bgImg, i * bgImg.width - offset, 0);
+    ctx.drawImage(bgImg, i * bgImg.width - offset, 0, bgImg.width, canvas.height);
   }
-
   ctx.save();
   if (player.vx < 0) {
     ctx.translate(player.x - cameraX + player.width, player.y);
@@ -181,17 +166,16 @@ function draw() {
   });
 
   ctx.drawImage(brideImg, bride.x - cameraX, bride.y, bride.width, bride.height);
-
   if (gameState === GameState.Won) {
     ctx.fillStyle = 'green';
     ctx.font = '36px sans-serif';
-    ctx.fillText('You Reached the Bride! 💍', 200, 100);
+    ctx.fillText('You Reached the Bride! 💍', canvas.width / 2 - 150, 100);
   }
-
   if (!gameStarted && countdownStarted) {
     ctx.fillStyle = '#000';
     ctx.font = '48px sans-serif';
-    ctx.fillText(countdown > 0 ? countdown : 'Go!', 370, 200);
+    ctx.textAlign = 'center';
+    ctx.fillText(countdown > 0 ? countdown : 'Go!', canvas.width / 2, canvas.height / 2);
   }
 }
 
@@ -231,9 +215,7 @@ window.addEventListener('keydown', e => {
   }
   keys[e.key] = true;
 });
-
-window.addEventListener('keyup', e => keys[e.key] = false);
-
+window.addEventListener('keyup', e => { keys[e.key] = false; });
 canvas.addEventListener('touchstart', e => {
   if (!gameStarted && !countdownStarted) {
     countdownStarted = true;
@@ -247,11 +229,7 @@ canvas.addEventListener('touchstart', e => {
   }
   touchX = e.touches[0].clientX;
 });
-
-canvas.addEventListener('touchend', () => {
-  touchX = null;
-});
-
+canvas.addEventListener('touchend', () => { touchX = null; });
 canvas.addEventListener('touchstart', e => {
   if (player.grounded) {
     player.vy = player.jumpPower;
