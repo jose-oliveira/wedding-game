@@ -2,10 +2,17 @@
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 document.body.appendChild(canvas);
-canvas.width = 800;
-canvas.height = 400;
+canvas.style.display = 'block';
 canvas.style.touchAction = 'none';
-document.body.style.margin = 0;
+document.body.style.margin = '0';
+let groundY;
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  groundY = canvas.height - 16;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 const GameState = { Playing: 'Playing', Won: 'Won' };
 let gameState = GameState.Playing;
@@ -15,7 +22,7 @@ let countdownStarted = false;
 let countdownTimer = null;
 
 const gravity = 0.5;
-const groundY = canvas.height - 16;
+
 
 const playerImg = new Image();
 playerImg.src = 'player.png';
@@ -199,6 +206,14 @@ function resetGame() {
 
 function loop() {
   requestAnimationFrame(loop);
+  if (window.innerWidth < window.innerHeight) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.font = '24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Please rotate to landscape', canvas.width / 2, canvas.height / 2);
+    return;
+  }
   update();
   draw();
 }
