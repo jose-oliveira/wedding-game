@@ -2,6 +2,12 @@
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 document.body.appendChild(canvas);
+const meta = document.createElement('meta');
+meta.name = 'viewport';
+meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+document.head.appendChild(meta);
+document.addEventListener('gesturestart', e => e.preventDefault());
+canvas.addEventListener('dblclick', e => e.preventDefault());
 canvas.style.display = 'block';
 document.body.style.margin = '0';
 let groundY;
@@ -95,6 +101,7 @@ function update() {
   }
 
   player.x += player.vx;
+  if (player.x < 0) player.x = 0;
   player.y += player.vy;
   if (player.y + player.height >= groundY) {
     player.y = groundY - player.height;
