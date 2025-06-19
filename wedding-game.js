@@ -22,11 +22,11 @@ resizeCanvas();
 const GameState = { Playing: 'Playing', Won: 'Won' };
 let gameState = GameState.Playing;
 let gameStarted = false;
-let countdown = 3;
-let countdownStarted = false;
+let countdown = 5;
+let countdownStarted = true;
 let countdownTimer = null;
 let showControlButtons = true;
-setTimeout(() => { showControlButtons = false; }, 10000);
+setTimeout(() => { showControlButtons = false; }, 20000);
 
 const gravity = 0.5;
 
@@ -160,9 +160,8 @@ function draw() {
   if (showControlButtons) {
     const btnW = canvas.width * 0.2;
     const btnH = 0.67 * btnW;
-    const y = canvas.height * 0.5;
+    const y = canvas.height * 0.4;
     const leftX = canvas.width * 0.1;
-    const centerX = canvas.width * 0.4;
     const rightX = canvas.width * 0.7;
     ctx.drawImage(leftBtnImg, leftX, y, btnW, btnH);
     ctx.drawImage(rightBtnImg, rightX, y, btnW, btnH);
@@ -231,31 +230,9 @@ function loop() {
   draw();
 }
 
-window.addEventListener('keydown', e => {
-  if (!gameStarted && !countdownStarted) {
-    countdownStarted = true;
-    countdownTimer = setInterval(() => {
-      countdown--;
-      if (countdown < 0) {
-        clearInterval(countdownTimer);
-        gameStarted = true;
-      }
-    }, 1000);
-  }
-  keys[e.key] = true;
-});
+window.addEventListener('keydown', e => { keys[e.key] = true; });
 window.addEventListener('keyup', e => { keys[e.key] = false; });
 canvas.addEventListener('touchstart', e => {
-  if (!gameStarted && !countdownStarted) {
-    countdownStarted = true;
-    countdownTimer = setInterval(() => {
-      countdown--;
-      if (countdown < 0) {
-        clearInterval(countdownTimer);
-        gameStarted = true;
-      }
-    }, 1000);
-  }
   touchX = e.touches[0].clientX;
 });
 canvas.addEventListener('touchend', () => { touchX = null; });
@@ -271,6 +248,15 @@ const allImages = [playerImg, brideImg, bgImg, leftBtnImg, rightBtnImg, ...enemy
 allImages.forEach(img => {
   img.onload = () => {
     imagesLoaded++;
-    if (imagesLoaded === allImages.length) loop();
+    if (imagesLoaded === allImages.length) {
+      countdownTimer = setInterval(() => {
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(countdownTimer);
+          gameStarted = true;
+        }
+      }, 1000);
+      loop();
+    }
   };
 });
