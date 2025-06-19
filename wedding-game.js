@@ -15,9 +15,14 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   groundY = canvas.height - 16;
+  enemies.forEach(enemy => {
+    enemy.y = groundY - 40;
+  });
+  player.y = Math.min(player.y, groundY - player.height);
+  bride.y = groundY - bride.height;
 }
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+// resizeCanvas call moved below after variable initializations
 
 const GameState = { Playing: 'Playing', Won: 'Won' };
 let gameState = GameState.Playing;
@@ -79,6 +84,13 @@ const bride = {
   width: 48,
   height: 48
 };
+
+resizeCanvas();
+player.y = groundY - player.height;
+bride.y = groundY - bride.height;
+enemies.forEach(enemy => {
+  enemy.y = groundY - enemy.height;
+});
 
 let keys = {};
 let touchX = null;
