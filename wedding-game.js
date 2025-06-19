@@ -262,6 +262,7 @@ allImages.forEach(img => {
     imagesLoaded++;
     if (imagesLoaded === allImages.length) {
       countdownTimer = setInterval(() => {
+        if (window.innerWidth < window.innerHeight) return;
         countdown--;
         if (countdown < 0) {
           clearInterval(countdownTimer);
