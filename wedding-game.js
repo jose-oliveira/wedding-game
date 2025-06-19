@@ -25,6 +25,8 @@ let gameStarted = false;
 let countdown = 3;
 let countdownStarted = false;
 let countdownTimer = null;
+let showControlButtons = true;
+setTimeout(() => { showControlButtons = false; }, 10000);
 
 const gravity = 0.5;
 
@@ -41,6 +43,10 @@ for (let i = 1; i <= enemyCount; i++) {
 }
 const bgImg = new Image();
 bgImg.src = 'background.png';
+const leftBtnImg = new Image();
+leftBtnImg.src = 'left.png';
+const rightBtnImg = new Image();
+rightBtnImg.src = 'right.png';
 
 const player = {
   x: 50,
@@ -144,11 +150,27 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   const offset = cameraX % bgImg.width;
   for (let i = -1; i <= Math.ceil(canvas.width / bgImg.width); i++) {
     ctx.drawImage(bgImg, i * bgImg.width - offset, 0, bgImg.width, canvas.height);
   }
   ctx.save();
+
+  if (showControlButtons) {
+    const btnW = canvas.width * 0.2;
+    const btnH = 0.67 * btnW;
+    const y = canvas.height * 0.5;
+    const leftX = canvas.width * 0.1;
+    const centerX = canvas.width * 0.4;
+    const rightX = canvas.width * 0.7;
+    ctx.drawImage(leftBtnImg, leftX, y, btnW, btnH);
+    ctx.drawImage(rightBtnImg, rightX, y, btnW, btnH);
+    ctx.fillStyle = 'white';
+    ctx.font = `${Math.floor(btnH * 0.4)}px sans-serif`;
+    ctx.textAlign = 'center';
+  }
+
   if (player.vx < 0) {
     ctx.translate(player.x - cameraX + player.width, player.y);
     ctx.scale(-1, 1);
@@ -245,7 +267,7 @@ canvas.addEventListener('touchstart', e => {
 }, { passive: true });
 
 let imagesLoaded = 0;
-const allImages = [playerImg, brideImg, bgImg, ...enemyImages];
+const allImages = [playerImg, brideImg, bgImg, leftBtnImg, rightBtnImg, ...enemyImages];
 allImages.forEach(img => {
   img.onload = () => {
     imagesLoaded++;
